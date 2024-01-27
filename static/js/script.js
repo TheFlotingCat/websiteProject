@@ -1,7 +1,3 @@
-let name = null;
-const number_of_questions = 10;
-
-
 /**
 
  * Redirects user to certain page. If no page is given, it will redirect user to home page (/).
@@ -29,19 +25,21 @@ async function redirection(to = "/") {
  */
 async function get_username() {
     let username = document.getElementById("name").value;
-    name = username
+    let password = document.getElementById("password").value;
+    sessionStorage.setItem("name", username);
 
     let response;
 
-    await fetch("/auth/check", {
+    fetch("/auth/check", {
         method: "POST",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        },
         body: JSON.stringify({
             name: username,
             score: 0,
-        }),
-            headers: {
-                "Content-type": "application/json; charset=UTF-8"
-        }
+            password: password,
+        })
     })
         .then(response => response.json())
         .then(json => {
@@ -50,13 +48,11 @@ async function get_username() {
         })
         .catch(error => console.error(error));
 
-    if (response["created"] === 1) {
-        await redirection();
-    } else {
-    //     handle user-already-present case
-    }
-
-
+    // if (response["created"] === 1) {
+    //     await redirection();
+    // } else {
+    // //     handle user-already-present case
+    // }
 }
 
 
@@ -71,15 +67,15 @@ async function submit_answers() {
     if (name == null) {
         await redirection();
     } else if (answers != null && answers.results != null && answers.results.length === number_of_questions) {
-        await fetch("/quiz/check", {
+        fetch("/quiz/check", {
             method: "POST",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            },
             body: JSON.stringify({
                 values: answers,
                 name: name
-            }),
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8"
-            }
+            })
         })
             .then(response => response.json())
             .then(json => console.log(json))

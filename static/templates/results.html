@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/js/script.js"></script>
+    <link rel="stylesheet" href="/static/templates/result.css"
+</head>
+<body>
+    <table class="firstColumnNowrap">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.score }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <button onclick="redirection()">Back to home page</button>
+</body>
+</html>

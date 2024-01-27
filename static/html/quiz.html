@@ -1,16 +1,16 @@
-<!DOCtype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Quiz</title>
-    <script src="/static/js/script.js"></script>
+    <link rel="stylesheet" href="/static/css/quiz.css">
 </head>
 <body>
-    <h1>Quiz page, theme is ...</h1>
+    <h1>Quiz page, theme is geeky programming</h1>
 
-    <label for="selection first">How many students are in 9П</label>
+    <label for="selection-first">How many students are in 9П</label>
     <br>
-    <select id="selection first">
+    <select id="selection-first">
         <option value="Under 10">Under 16</option>
         <option value="10 to 16">16 to 25</option>
         <option value="17 to 20">26 to 40</option>
@@ -21,7 +21,7 @@
     <br>
 
     <label>
-        What programming languages are complied.
+        What programming languages are compiled.
         <br>
         <label><input type="checkbox">Rust</label>
         <label><input type="checkbox">Python</label>
@@ -34,17 +34,17 @@
     <br>
 
     <label>
-        Will this rust code compile?
+        Will this Rust code compile?
         <br>
         <code>
-        &emsp;fn remove_zeros(v: &mut Vec&lti32&gt) { <br>
-        &emsp; &emsp;for (i, t) in v.iter().enumerate().rev() { <br>
-        &emsp; &emsp; &emsp; if *t == 0 { <br>
-        &emsp; &emsp; &emsp; &emsp; v.remove(i); <br>
-        &emsp; &emsp; &emsp; &emsp; v.shrink_to_fit(); <br>
-        &emsp; &emsp; &emsp; } <br>
-        &emsp; &emsp; } <br>
-        &emsp; } <br>
+            &emsp;fn remove_zeros(v: &mut Vec&lti32&gt) { <br>
+            &emsp; &emsp;for (i, t) in v.iter().enumerate().rev() { <br>
+            &emsp; &emsp; &emsp; if *t == 0 { <br>
+            &emsp; &emsp; &emsp; &emsp; v.remove(i); <br>
+            &emsp; &emsp; &emsp; &emsp; v.shrink_to_fit(); <br>
+            &emsp; &emsp; &emsp; } <br>
+            &emsp; &emsp; } <br>
+            &emsp; } <br>
         </code>
         <label><input type="radio" name="option">Yes</label>
         <label><input type="radio" name="option">No</label>
@@ -108,9 +108,9 @@
 
     <br>
 
-    <label for="selection last">Are you Jewish?</label>
+    <label for="selection-last">Are you Jewish?</label>
     <br>
-    <select id="selection last">
+    <select id="selection-last">
         <option value="Yes">Under 16</option>
         <option value="No">16 to 25</option>
         <option value="I work/study in school №57, obvious">26 to 40</option>
@@ -121,5 +121,6 @@
     <button onclick="submit_answers()" class="submit">Submit</button>
 
     <button onclick="redirection()">Back to home page</button>
+
 </body>
 </html>

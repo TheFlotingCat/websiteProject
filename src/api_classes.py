@@ -8,3 +8,4 @@ class TestAnswers(BaseModel):
 class User(BaseModel):
     name: str
     score: int
+    password: str
