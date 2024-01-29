@@ -14,6 +14,9 @@
 
  */
 async function redirection(to = "/") {
+    if (to === "/signup" && sessionStorage.getItem("token") !== null) {
+        return
+    }
     window.location.replace(to);
 }
 
@@ -48,7 +51,7 @@ async function authentication(type) {
         url = "signup/check";
     }
 
-    fetch(url, {
+    let response = await fetch(url, {
         method: "POST",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
@@ -66,7 +69,7 @@ async function authentication(type) {
         })
         .catch(error => console.error(error));
     
-    return null
+    return response
 }
 
 
@@ -92,10 +95,13 @@ async function signup() {
     if (response === null) {
         return
     }
-    
-    if (response['already present']) {
+
+    if (response["already present"] === 0) {
         await add_text_element_on_page("User with this username doesn't exist, log in firstly", "error_message");
+    } else if (response["password"] === 0) {
+        await add_text_element_on_page("Wrong password", "error_message");
     } else {
+        sessionStorage.setItem("token", response["token"]);
         await redirection();
     }
 }
@@ -126,10 +132,8 @@ async function login() {
         return
     }
     
-    if (!(response["created"])) {
+    if (response["created"] === 0) {
         await add_text_element_on_page("User with this username already exists", "error_message");
-    } else if (response["token"] !== 0) {
-        sessionStorage.setItem("token", response["token"]);
     } else {
         await redirection();
     }
@@ -160,6 +164,27 @@ async function get_chosen_answer_by_name_for_radio(name) {
     }
 
     return null
+}
+
+
+async function load_results() {
+    let token = sessionStorage.getItem('token');
+
+    console.log(token);
+
+    let response = await fetch("/results", {
+        method: "GET",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "token": token
+        },
+    })
+        .then((response) => {
+            return response.text()
+        })
+        .catch(error => console.error(error));
+
+    document.write(response);
 }
 
 
@@ -207,7 +232,10 @@ async function submit_answers() {
         })
         .catch(error => console.error(error));
 
-    console.log(response);
+    if (response["sign in"] === 1) {
+        await redirection("/signup_error");
+        return
+    }
 
     await add_text_element_on_page("Your score is " + response["score"], "score");
 

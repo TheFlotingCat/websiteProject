@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from api_classes import TestAnswers, User
 from fastapi import FastAPI, Header
 from database_init import Users, Tokens, engine, QuizAnswers
-from fastapi.responses import FileResponse, JSONResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, PackageLoader, select_autoescape
 from uuid import uuid4
@@ -49,23 +49,20 @@ async def authentication(user: User):
     result = session.query(Users).filter(Users.name == user.name).all()
 
     if not result:
-        return JSONResponse({'info': f'User {user.name} not registered, cannot sign up.', 'token': 0,
-                             'already present': 1})
+        return JSONResponse({'info': f'User {user.name} not registered, cannot sign up.',
+                             'already present': 0})
 
     found_user = result[0]
 
     if user.password != found_user.password:
-        return JSONResponse({'info': 'Wrong password.', 'token': 0})
-
-    if found_user.token:
-        return JSONResponse({'info': f'User {user.name} already have token.', 'token': 0, 'already present': 0})
+        return JSONResponse({'info': 'Wrong password.', 'password': 0})
 
     token = uuid4().hex
 
     found_user.token = Tokens(token=token, user_id=found_user.id)
     session.commit()
 
-    return JSONResponse({'info': 'Generated token for user', 'token': token, 'already present': 0})
+    return JSONResponse({'info': 'Generated token for user', 'token': token})
 
 
 @app.post('/login/check')
@@ -103,7 +100,7 @@ async def check_answers(answers: TestAnswers, token: Annotated[str | None, Heade
     print(token_result)
 
     if token_result is None:
-        return RedirectResponse()
+        return JSONResponse({'info': 'User is not signed in', 'sign in': 1})
 
     score: int = 0
 
@@ -123,15 +120,22 @@ async def check_answers(answers: TestAnswers, token: Annotated[str | None, Heade
         if right_or_wrong:
             score += 1
 
+    user = session.query(Users).join(Tokens).filter(Tokens.token == token).first()
+
+    user.score = score
+
     return JSONResponse({'info': 'Test completed', 'score': score})
 
 
 @app.get('/results')
-async def load_results():
-    # token_result = session.query().filter(Token.token == token).first()
+async def load_results(token: Annotated[str | None, Header()] = None):
+    print(token)
+    token_result = session.query(Tokens).filter(Tokens.token == token).first()
 
-    # if token_result is None:
-    #     return HTMLResponse('/html/not_signed_up.html')
+    print(token_result)
+
+    if token_result is None:
+        return FileResponse('static/html/not_signed_up.html')
 
     query_results = session.query(Users).all()
 
