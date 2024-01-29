@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="/static/css/auth.css">
 </head>
 <body>
-    <h1>Authentication page</h1>
+    <h1>Log in</h1>
+    <div id="error_message"></div>
+
+    <button onclick="redirection()" id="homepage">Back to home page</button>
 
     <form method="post">
         <label for="name">Name</label><br>
@@ -19,6 +22,6 @@
         <input type="text" id="password" required="required"><br>
     </form>
 
-    <button onclick="get_username()">Submit</button>
+    <button onclick="login()">Submit</button>
 </body>
 </html>

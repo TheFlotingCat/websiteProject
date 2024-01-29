@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class TestAnswers(BaseModel):
-    values: list[str]
+    values: list[str | list[str]]
 
 
 class User(BaseModel):

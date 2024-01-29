@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Authentication</title>
+    <script src="/static/js/script.js"></script>
+    <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+<body>
+    <h1>Sign up</h1>
+    <div id="error_message"></div>
+
+    <button onclick="redirection()" id="homepage">Back to home page</button>
+
+    <form method="post">
+        <label for="name">Name</label><br>
+        <input type="text" id="name" required="required"><br>
+    </form>
+
+    <form method="post">
+        <label for="password">Password</label><br>
+        <input type="text" id="password" required="required"><br>
+    </form>
+
+    <button onclick="signup()">Submit</button>
+</body>
+</html>

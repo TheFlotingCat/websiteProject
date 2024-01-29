@@ -4,123 +4,110 @@
     <meta charset="UTF-8">
     <title>Quiz</title>
     <link rel="stylesheet" href="/static/css/quiz.css">
+    <script src="/static/js/script.js"></script>
 </head>
 <body>
     <h1>Quiz page, theme is geeky programming</h1>
 
-    <label for="selection-first">How many students are in 9П</label>
-    <br>
+    <button onclick="redirection()" id="homepage">Back to home page</button>
+
+    <label class="question" for="selection-first">How many students are in 9П</label>
     <select id="selection-first">
-        <option value="Under 10">Under 16</option>
-        <option value="10 to 16">16 to 25</option>
-        <option value="17 to 20">26 to 40</option>
-        <option value="20 to 25">40 to 60</option>
-        <option value="Over 24">Over 60</option>
+        <option value="under 10">Under 10</option>
+        <option value="10 to 16">10 to 16</option>
+        <option value="17 to 20">17 to 20</option>
+        <option value="20 to 24">20 to 24</option>
+        <option value="over 24">Over 24</option>
     </select>
 
     <br>
 
-    <label>
-        What programming languages are compiled.
-        <br>
-        <label><input type="checkbox">Rust</label>
-        <label><input type="checkbox">Python</label>
-        <label><input type="checkbox">Ruby</label>
-        <label><input type="checkbox">SQL</label>
-        <label><input type="checkbox">C++</label>
-        <label><input type="checkbox">Ada</label>
-    </label>
+    <label class="question">What programming languages are compiled.</label>
+    <label><input type="checkbox" name="compiled_lang" value="rust">Rust</label>
+    <label><input type="checkbox" name="compiled_lang" value="python">Python</label>
+    <label><input type="checkbox" name="compiled_lang" value="ruby">Ruby</label>
+    <label><input type="checkbox" name="compiled_lang" value="sql">SQL</label>
+    <label><input type="checkbox" name="compiled_lang" value="cpp">C++</label>
+    <label><input type="checkbox" name="compiled_lang" value="ada">Ada</label>
 
     <br>
 
-    <label>
-        Will this Rust code compile?
-        <br>
-        <code>
-            &emsp;fn remove_zeros(v: &mut Vec&lti32&gt) { <br>
-            &emsp; &emsp;for (i, t) in v.iter().enumerate().rev() { <br>
-            &emsp; &emsp; &emsp; if *t == 0 { <br>
-            &emsp; &emsp; &emsp; &emsp; v.remove(i); <br>
-            &emsp; &emsp; &emsp; &emsp; v.shrink_to_fit(); <br>
-            &emsp; &emsp; &emsp; } <br>
-            &emsp; &emsp; } <br>
-            &emsp; } <br>
-        </code>
-        <label><input type="radio" name="option">Yes</label>
-        <label><input type="radio" name="option">No</label>
-    </label>
+    <label class="question">Will this Rust code compile?</label>
+    <code>
+        &emsp;fn remove_zeros(v: &mut Vec&lti32&gt) { <br>
+        &emsp; &emsp;for (i, t) in v.iter().enumerate().rev() { <br>
+        &emsp; &emsp; &emsp; if *t == 0 { <br>
+        &emsp; &emsp; &emsp; &emsp; v.remove(i); <br>
+        &emsp; &emsp; &emsp; &emsp; v.shrink_to_fit(); <br>
+        &emsp; &emsp; &emsp; } <br>
+        &emsp; &emsp; } <br>
+        &emsp; } <br>
+    </code>
+    <form>
+        <label><input type="radio" value="yes" name="rust">Yes</label>
+        <label><input type="radio" value="no" name="rust">No</label>
+    </form>
 
     <br>
 
-    <label>
-        When was C programming language released.
-        <br>
-        <label><input type="text"></label>
-    </label>
+    <label class="question">When was C programming language released (year).</label>
+    <label><input type="text" id="C"></label>
 
     <br>
 
-    <label>
-        What Philip Dick's novel inspired Blade Runner movie.
-        <br>
-        <label><input type="radio" name="book">Ubik</label>
-        <label><input type="radio" name="book">Do Androids Dream of Electric Sheep</label>
-        <label><input type="radio" name="book">The Simulacra</label>
-    </label>
+    <label class="question">What Philip Dick's novel inspired the Blade Runner movie.</label>
+    <form>
+        <label><input type="radio" value="ubik" name="book">Ubik</label>
+        <label><input type="radio" value="do androids dream of electric sheep" name="book">
+            Do Androids Dream of Electric Sheep</label>
+        <label><input type="radio" value="the simulacra" name="book">The Simulacra</label>
+    </form>
 
     <br>
 
-    <label>
-        What will that Python code print.
-<!--    Python code image-->
-        <br>
-        <label><input type="text"></label>
-    </label>
+    <label class="question">Everything in python is a</label>
+    <form>
+        <label><input type="radio" value="object" name="python">Object</label>
+        <label><input type="radio" value="string" name="python">String</label>
+        <label><input type="radio" value="int" name="python">Int</label>
+        <label><input type="radio" value="idk" name="python">Idk, lol</label>
+    </form>
 
      <br>
 
-    <label>
-        What is functional programming trying to get rid of.
-        <br>
-        <label><input type="checkbox">States</label>
-        <label><input type="checkbox">Classes</label>
-        <label><input type="checkbox">Variables</label>
-        <label><input type="checkbox">Objects</label>
-        <label><input type="checkbox">Short lines of code</label>
-    </label>
+    <label class="question">What is functional programming trying to get rid of.</label>
+    <label><input type="checkbox" name="functional_prog" value="classes">Classes</label>
+    <label><input type="checkbox" name="functional_prog" value="variables">Variables</label>
+    <label><input type="checkbox" name="functional_prog" value="objects">Objects</label>
+    <label><input type="checkbox" name="functional_prog" value="states">States</label>
+    <label><input type="checkbox" name="functional_prog" value="short lines">Short lines of code</label>
 
     <br>
 
-    <label>
-        What keyboard layout is default for French.
-        <br>
-        <label><input type="text"></label>
-    </label>
+    <label class="question">What keyboard layout is default for French.</label>
+    <label><input type="text" id="layout"></label>
 
     <br>
 
-    <label>
-        With whom I'd retire and live far from noise and politics?
-        <br>
-        <label><input type="radio">Yennefer</label>
-        <label><input type="radio">Triss</label>
-    </label>
+    <label class="question">With whom I'd retire and live far from noise and politics?</label>
+    <form>
+        <label><input type="radio" name="best_girl" value="yennefer">Yennefer</label>
+        <label><input type="radio" name="best_girl" value="triss">Triss</label>
+    </form>
 
     <br>
 
-    <label for="selection-last">Are you Jewish?</label>
-    <br>
+    <label class="question" for="selection-last">Are you Jewish?</label>
     <select id="selection-last">
-        <option value="Yes">Under 16</option>
-        <option value="No">16 to 25</option>
-        <option value="I work/study in school №57, obvious">26 to 40</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+        <option value="obvious">I work/study in school №57, obvious</option>
     </select>
 
     <br>
 
     <button onclick="submit_answers()" class="submit">Submit</button>
-
-    <button onclick="redirection()">Back to home page</button>
-
+    <div id="error_message"></div>
+    <div id="score"></div>
 </body>
 </html>

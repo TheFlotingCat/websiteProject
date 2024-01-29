@@ -28,3 +28,17 @@ button {
 button:hover {
     background-color: #45a049;
 }
+#homepage {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+#error_message {
+    color: #f32020;
+}

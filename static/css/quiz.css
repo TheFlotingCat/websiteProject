@@ -28,3 +28,28 @@ code {
     border: none;
     cursor: pointer;
 }
+.question {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+#homepage {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+#error_message {
+    color: #f32020;
+    font-size: xx-large;
+}
+#score {
+    color: #f3ba5e;
+    font-size: xx-large;
+}

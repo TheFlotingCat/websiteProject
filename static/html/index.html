@@ -9,8 +9,15 @@
 <body>
     <h1>Welcome to los programadores hermanos family</h1>
 
-    <button onclick="redirection('/results')" id="see results">See global results</button>
+    <div class="button-container">
+        <button onclick="redirection('/results')" class="menu">See global results</button>
+        <br>
+        <button onclick="redirection('/quiz')" class="menu">Take test</button>
 
-    <button onclick="redirection('/quiz')" id="take quiz">Take test</button>
+        <label id="authorisation">
+            <button onclick="redirection('/login')">Log in</button>
+            <button onclick="redirection('/signup')">Sign up</button>
+        </label>
+    </div>
 </body>
 </html>
