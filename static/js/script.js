@@ -13,7 +13,7 @@
  * redirection("/quiz") //redirects to quiz page
 
  */
-async function redirection(to = "/") {
+function redirection(to = "/") {
     if (to === "/signup" && sessionStorage.getItem("token") !== null) {
         return
     }
@@ -21,7 +21,7 @@ async function redirection(to = "/") {
 }
 
 
-async function get_text_by_id(id) {
+function get_text_by_id(id) {
     let value = document.getElementById(id).value;
     if (value === "") {
         return null
@@ -30,18 +30,18 @@ async function get_text_by_id(id) {
 }
 
 
-async function authentication(type) {
-    let username = await get_text_by_id("name");
-    let password = await get_text_by_id("password");
+function authentication(type) {
+    let username = get_text_by_id("name");
+    let password = get_text_by_id("password");
     let url;
 
     console.log(username, password);
 
     if (username === null) {
-        await add_text_element_on_page("Username is required", "error_message");
+        add_text_element_on_page("Username is required", "error_message");
         return null
     } else if (password === null) {
-        await add_text_element_on_page("Password is required", "error_message");
+        add_text_element_on_page("Password is required", "error_message");
         return null
     }
     
@@ -51,7 +51,7 @@ async function authentication(type) {
         url = "signup/check";
     }
 
-    let response = await fetch(url, {
+    fetch(url, {
         method: "POST",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
@@ -65,15 +65,13 @@ async function authentication(type) {
         .then(response => response.json())
         .then(json => {
             console.log(json);
-            return json
+            sessionStorage.setItem("response", json);
         })
         .catch(error => console.error(error));
-    
-    return response
 }
 
 
-async function add_text_element_on_page(text, id) {
+function add_text_element_on_page(text, id) {
     let element = document.createTextNode(text);
     let space_for_element = document.getElementById(id);
 
@@ -81,33 +79,35 @@ async function add_text_element_on_page(text, id) {
 }
 
 
-async function clear_field(field_id) {
+function clear_field(field_id) {
     let field = document.getElementById(field_id);
     field.innerHTML = "";
 }
 
 
-async function signup() {
-    await clear_field("error_message");
+function signup() {
+    clear_field("error_message");
 
-    let response = await authentication("signup");
+    authentication("signup");
+
+    let response = sessionStorage.getItem("response");
 
     if (response === null) {
         return
     }
 
     if (response["already present"] === 0) {
-        await add_text_element_on_page("User with this username doesn't exist, log in firstly", "error_message");
+        add_text_element_on_page("User with this username doesn't exist, log in firstly", "error_message");
     } else if (response["password"] === 0) {
-        await add_text_element_on_page("Wrong password", "error_message");
+        add_text_element_on_page("Wrong password", "error_message");
     } else {
         sessionStorage.setItem("token", response["token"]);
-        await redirection();
+        redirection();
     }
 }
 
 
-async function add_video_on_page(path, id) {
+function add_video_on_page(path, id) {
     let video = document.createElement("video");
     video.src = path;
     video.autoplay = true;
@@ -123,24 +123,26 @@ async function add_video_on_page(path, id) {
 }
 
 
-async function login() {
-    await clear_field("error_message");
+function login() {
+    clear_field("error_message");
 
-    let response = await authentication("login");
+    authentication("login");
+
+    let response = sessionStorage.getItem("response");
 
     if (response === null) {
         return
     }
     
     if (response["created"] === 0) {
-        await add_text_element_on_page("User with this username already exists", "error_message");
+        add_text_element_on_page("User with this username already exists", "error_message");
     } else {
-        await redirection();
+        redirection();
     }
 }
 
 
-async function get_chosen_answer_by_name_for_checkbox(name) {
+function get_chosen_answer_by_name_for_checkbox(name) {
     let element = document.getElementsByName(name);
     let chosen_answers = [];
 
@@ -154,7 +156,7 @@ async function get_chosen_answer_by_name_for_checkbox(name) {
 }
 
 
-async function get_chosen_answer_by_name_for_radio(name) {
+function get_chosen_answer_by_name_for_radio(name) {
     let element = document.getElementsByName(name);
 
     for (let checkbox of element) {
@@ -167,12 +169,17 @@ async function get_chosen_answer_by_name_for_radio(name) {
 }
 
 
-function load_results() {
+function get_results() {
     let token = sessionStorage.getItem('token');
 
     console.log(token);
 
-    fetch("/results", {
+    if (token === undefined) {
+        console.log('not defined');
+        redirection("/signup_error");
+    }
+
+    fetch("http://0.0.0.0:8001/results", {
         method: "GET",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
@@ -187,20 +194,20 @@ function load_results() {
 }
 
 
-async function submit_answers() {
-    await clear_field("score");
-    await clear_field("error_message");
+function submit_answers() {
+    clear_field("score");
+    clear_field("error_message");
 
-    let first_answer = await get_text_by_id("selection-first");
-    let second_answer = await get_chosen_answer_by_name_for_checkbox("compiled_lang");
-    let third_answer = await get_chosen_answer_by_name_for_radio("rust");
-    let forth_answer = await get_text_by_id("C");
-    let fifth_answer = await get_chosen_answer_by_name_for_radio("book");
-    let sixth_answer = await get_chosen_answer_by_name_for_radio("python");
-    let seventh_answer = await get_chosen_answer_by_name_for_checkbox("functional_prog");
-    let eight_answer = await get_text_by_id("layout");
-    let ninth_answer = await get_chosen_answer_by_name_for_radio("best_girl");
-    let tenth_answer =  await get_text_by_id("selection-last");
+    let first_answer = get_text_by_id("selection-first");
+    let second_answer = get_chosen_answer_by_name_for_checkbox("compiled_lang");
+    let third_answer = get_chosen_answer_by_name_for_radio("rust");
+    let forth_answer = get_text_by_id("C");
+    let fifth_answer = get_chosen_answer_by_name_for_radio("book");
+    let sixth_answer = get_chosen_answer_by_name_for_radio("python");
+    let seventh_answer = get_chosen_answer_by_name_for_checkbox("functional_prog");
+    let eight_answer = get_text_by_id("layout");
+    let ninth_answer = get_chosen_answer_by_name_for_radio("best_girl");
+    let tenth_answer =  get_text_by_id("selection-last");
 
     let answers = [first_answer, second_answer, third_answer, forth_answer, fifth_answer,
     sixth_answer, seventh_answer, eight_answer, ninth_answer, tenth_answer]
@@ -210,11 +217,11 @@ async function submit_answers() {
     let token = sessionStorage.getItem("token");
 
     if (present_answers.includes(false)) {
-        await add_text_element_on_page("All quiz fields are required", "error_message");
+        add_text_element_on_page("All quiz fields are required", "error_message");
         return
     }
 
-    let response = await fetch("/quiz/check", {
+    fetch("/quiz/check", {
         method: "POST",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
@@ -224,25 +231,29 @@ async function submit_answers() {
             values: answers,
         })
     })
-        .then(response => response.json())
+        .then(response => response.text())
         .then(json => {
             console.log(json);
-            return json
+            sessionStorage.setItem("json", json);
         })
         .catch(error => console.error(error));
 
-    if (response["sign in"] === 1) {
-        await redirection("/signup_error");
+    let response = JSON.parse(sessionStorage.getItem("json"));
+
+    console.log("response: " + response["signup"]);
+
+    if (response["signup"] === 1) {
+        redirection("/signup_error");
         return
     }
 
-    await add_text_element_on_page("Your score is " + response["score"], "score");
+    add_text_element_on_page("Your score is " + response["score"], "score");
 
     if (response["score"] < 5) {
-        await add_video_on_page("/static/videos/premitivniye.mp4", "score");
+        add_video_on_page("/static/videos/premitivniye.mp4", "score");
     } else if (response["score"] < 8) {
-        await add_video_on_page("/static/videos/somnitelno.mp4", "score");
+        add_video_on_page("/static/videos/somnitelno.mp4", "score");
     } else {
-        await add_video_on_page("/static/videos/kruto.mp4", "score");
+        add_video_on_page("/static/videos/kruto.mp4", "score");
     }
 }

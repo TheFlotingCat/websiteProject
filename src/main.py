@@ -1,11 +1,10 @@
 from typing import Annotated
 import uvicorn
 from sqlalchemy.orm import sessionmaker
-from starlette.requests import Request
 from api_classes import TestAnswers, User
-from fastapi import FastAPI, Header
+from fastapi import FastAPI, Header, Request
 from database_init import Users, Tokens, engine, QuizAnswers
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from uuid import uuid4
@@ -19,7 +18,7 @@ ANSWERS = []
 
 session = sessionmaker(bind=engine)()
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="static/templates")
 
 
 @app.get('/')
@@ -58,6 +57,7 @@ async def signup_authentication(user: User):
     token = uuid4().hex
 
     found_user.token = Tokens(token=token, user_id=found_user.id)
+    session.add(found_user)
     session.commit()
 
     return JSONResponse({'info': 'Generated token for user', 'token': token})
@@ -93,12 +93,13 @@ async def signup_error():
 
 @app.post('/quiz/check')
 async def check_answers(answers: TestAnswers, token: Annotated[str | None, Header()] = None):
+    print(token)
     token_result = session.query(Tokens).filter(Tokens.token == token).first()
 
     print(token_result)
 
     if token_result is None:
-        return JSONResponse({'info': 'User is not signed in', 'sign in': 1})
+        return JSONResponse({'info': 'User is not signed up', 'signup': 1})
 
     score: int = 0
 
@@ -125,7 +126,7 @@ async def check_answers(answers: TestAnswers, token: Annotated[str | None, Heade
     return JSONResponse({'info': 'Test completed', 'score': score})
 
 
-@app.get('/results')
+@app.get('/results', response_class=HTMLResponse)
 async def load_results(request: Request, token: Annotated[str | None, Header()] = None):
     print('hi')
     print(token)
