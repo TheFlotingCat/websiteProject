@@ -127,6 +127,7 @@ async def check_answers(answers: TestAnswers, token: Annotated[str | None, Heade
 
 @app.get('/results')
 async def load_results(request: Request, token: Annotated[str | None, Header()] = None):
+    print('hi')
     print(token)
     print(request)
     token_result = session.query(Tokens).filter(Tokens.token == token).first()
@@ -139,7 +140,7 @@ async def load_results(request: Request, token: Annotated[str | None, Header()] 
     query_results = session.query(Users).all()
 
     return templates.TemplateResponse(
-        name='results.html', context={'users': query_results}
+        request=request, name='results.html', context={'users': query_results}
     )
 
 

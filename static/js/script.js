@@ -180,6 +180,7 @@ function load_results() {
         },
     })
         .then((response) => {
+            console.log(response);
             document.write(response);
         })
         .catch(error => console.error(error));
