@@ -167,12 +167,12 @@ async function get_chosen_answer_by_name_for_radio(name) {
 }
 
 
-async function load_results() {
+function load_results() {
     let token = sessionStorage.getItem('token');
 
     console.log(token);
 
-    let response = await fetch("/results", {
+    fetch("/results", {
         method: "GET",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
@@ -180,11 +180,9 @@ async function load_results() {
         },
     })
         .then((response) => {
-            return response.text()
+            document.write(response);
         })
         .catch(error => console.error(error));
-
-    document.write(response);
 }
 
 

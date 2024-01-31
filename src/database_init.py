@@ -4,7 +4,7 @@ from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer, String
 
 
-engine = create_engine('sqlite:///database.db', echo=True)
+engine = create_engine('sqlite:////home/kir/PycharmProjects/website/src/database.db', echo=True)
 
 Session = sessionmaker(bind=engine)
 
@@ -68,3 +68,4 @@ def add_quiz_answers_to_db():
 
 Base.metadata.create_all(engine)
 add_quiz_answers_to_db()
+session.close()

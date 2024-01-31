@@ -1,12 +1,13 @@
 from typing import Annotated
 import uvicorn
 from sqlalchemy.orm import sessionmaker
+from starlette.requests import Request
 from api_classes import TestAnswers, User
 from fastapi import FastAPI, Header
 from database_init import Users, Tokens, engine, QuizAnswers
-from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from jinja2 import Environment, PackageLoader, select_autoescape
+from fastapi.templating import Jinja2Templates
 from uuid import uuid4
 
 
@@ -18,10 +19,7 @@ ANSWERS = []
 
 session = sessionmaker(bind=engine)()
 
-environment = Environment(
-    loader=PackageLoader('static'),
-    autoescape=select_autoescape()
-)
+templates = Jinja2Templates(directory="templates")
 
 
 @app.get('/')
@@ -40,12 +38,12 @@ async def signin():
 
 
 @app.get('/login')
-async def signin():
+async def login():
     return FileResponse('static/html/login.html')
 
 
 @app.post('/signup/check')
-async def authentication(user: User):
+async def signup_authentication(user: User):
     result = session.query(Users).filter(Users.name == user.name).all()
 
     if not result:
@@ -66,7 +64,7 @@ async def authentication(user: User):
 
 
 @app.post('/login/check')
-async def authentication(user: User):
+async def login_authentication(user: User):
     result = session.query(Users).filter(Users.name == user.name).all()
 
     if result:
@@ -128,8 +126,9 @@ async def check_answers(answers: TestAnswers, token: Annotated[str | None, Heade
 
 
 @app.get('/results')
-async def load_results(token: Annotated[str | None, Header()] = None):
+async def load_results(request: Request, token: Annotated[str | None, Header()] = None):
     print(token)
+    print(request)
     token_result = session.query(Tokens).filter(Tokens.token == token).first()
 
     print(token_result)
@@ -139,9 +138,9 @@ async def load_results(token: Annotated[str | None, Header()] = None):
 
     query_results = session.query(Users).all()
 
-    template = environment.get_template('results.html')
-
-    return HTMLResponse(template.render(users=query_results))
+    return templates.TemplateResponse(
+        name='results.html', context={'users': query_results}
+    )
 
 
 if __name__ == '__main__':
