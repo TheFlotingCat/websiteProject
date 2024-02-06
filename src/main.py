@@ -7,6 +7,7 @@ from database_init import Users, Tokens, engine, QuizAnswers
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 from uuid import uuid4
 
 
@@ -20,6 +21,16 @@ session = sessionmaker(bind=engine)()
 
 templates = Jinja2Templates(directory="static/templates")
 
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get('/')
 async def home():
@@ -32,22 +43,33 @@ async def favicon():
 
 
 @app.get('/signup')
-async def signin():
+async def signup():
     return FileResponse('static/html/signup.html')
 
 
-@app.get('/login')
-async def login():
-    return FileResponse('static/html/login.html')
+@app.get('/signin')
+async def signin():
+    return FileResponse('static/html/signin.html')
 
 
-@app.post('/signup/check')
-async def signup_authentication(user: User):
+@app.get('/quiz')
+async def quiz():
+    return FileResponse('static/html/quiz.html')
+
+
+@app.get('/signin_error')
+async def signup_error():
+    return FileResponse('static/html/not_signed_in.html')
+
+
+@app.post('/signin/check')
+async def signin_authentication(user: User):
+    print('signing in')
     result = session.query(Users).filter(Users.name == user.name).all()
 
     if not result:
-        return JSONResponse({'info': f'User {user.name} not registered, cannot sign up.',
-                             'already present': 0})
+        return JSONResponse({'info': f'User {user.name} not registered, cannot sign in.',
+                             'present': 0})
 
     found_user = result[0]
 
@@ -60,16 +82,17 @@ async def signup_authentication(user: User):
     session.add(found_user)
     session.commit()
 
-    return JSONResponse({'info': 'Generated token for user', 'token': token})
+    return JSONResponse({'info': 'Generated token for user.', 'token': token})
 
 
-@app.post('/login/check')
-async def login_authentication(user: User):
+@app.post('/signup/check')
+async def signup_authentication(user: User):
+    print('signing up')
     result = session.query(Users).filter(Users.name == user.name).all()
 
     if result:
         return JSONResponse({'info': 'User already present, error.', 'created': 0})
-
+    print('hi', result, user)
     user_in_database_type: Users = Users(
         name=user.name,
         score=user.score,
@@ -81,16 +104,6 @@ async def login_authentication(user: User):
     return JSONResponse({'info': f'User {user.name} created.', 'created': 1})
 
 
-@app.get('/quiz')
-async def quiz():
-    return FileResponse('static/html/quiz.html')
-
-
-@app.get('/signup_error')
-async def signup_error():
-    return FileResponse('static/html/not_signed_up.html')
-
-
 @app.post('/quiz/check')
 async def check_answers(answers: TestAnswers, token: Annotated[str | None, Header()] = None):
     print(token)
@@ -99,7 +112,7 @@ async def check_answers(answers: TestAnswers, token: Annotated[str | None, Heade
     print(token_result)
 
     if token_result is None:
-        return JSONResponse({'info': 'User is not signed up', 'signup': 1})
+        return JSONResponse({'info': 'User is not signed in', 'signin': 1})
 
     score: int = 0
 
@@ -128,15 +141,14 @@ async def check_answers(answers: TestAnswers, token: Annotated[str | None, Heade
 
 @app.get('/results', response_class=HTMLResponse)
 async def load_results(request: Request, token: Annotated[str | None, Header()] = None):
-    print('hi')
-    print(token)
-    print(request)
     token_result = session.query(Tokens).filter(Tokens.token == token).first()
 
+    print(request)
+    print(token)
     print(token_result)
 
     if token_result is None:
-        return FileResponse('static/html/not_signed_up.html')
+        return FileResponse('static/html/not_signed_in.html')
 
     query_results = session.query(Users).all()
 
@@ -146,4 +158,4 @@ async def load_results(request: Request, token: Annotated[str | None, Header()] 
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8001)
+    uvicorn.run(app, host='0.0.0.0', port=8002)

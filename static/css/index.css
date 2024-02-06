@@ -5,7 +5,7 @@ body {
 }
 
 h1 {
-    background-color: #f2f2f2; /* Add background color to h1 tag */
+    background-color: #f2f2f2;
     padding: 20px;
     text-align: center;
     color: #f3ba5e;
@@ -24,10 +24,16 @@ button:hover {
     background-color: #005f7d;
 }
 
-#authorisation {
+#signup {
     position: absolute;
     top: 20px;
     right: 20px;
+}
+
+#signin {
+    position: absolute;
+    top: 20px;
+    right: 110px;
 }
 
 .menu {

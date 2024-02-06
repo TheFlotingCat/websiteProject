@@ -14,13 +14,25 @@
 
  */
 function redirection(to = "/") {
-    if (to === "/signup" && sessionStorage.getItem("token") !== null) {
-        return
-    }
     window.location.replace(to);
 }
 
 
+/**
+
+ * Returns text in HTML element by its ID
+
+ *
+
+ * @param {string} id - Element's ID
+
+ *
+
+ * @example
+
+ * get_text_by_id("quiz") //returns text of element with ID "quiz"
+
+ */
 function get_text_by_id(id) {
     let value = document.getElementById(id).value;
     if (value === "") {
@@ -30,6 +42,15 @@ function get_text_by_id(id) {
 }
 
 
+/**
+
+ * Sends sign in/sign up request to server.
+
+ *
+
+ * @param {('signup'|'signin')} type - Sets url for request.
+
+ */
 function authentication(type) {
     let username = get_text_by_id("name");
     let password = get_text_by_id("password");
@@ -38,19 +59,21 @@ function authentication(type) {
     console.log(username, password);
 
     if (username === null) {
+        clear_field("error_message");
         add_text_element_on_page("Username is required", "error_message");
         return null
     } else if (password === null) {
+        clear_field("error_message");
         add_text_element_on_page("Password is required", "error_message");
         return null
     }
     
-    if (type === "login") {
-        url = "login/check";
+    if (type === "signin") {
+        url = "http://0.0.0.0:8001/signin/check";
     } else {
-        url = "signup/check";
+        url = "http://0.0.0.0:8001/signup/check";
     }
-
+    console.log(url);
     fetch(url, {
         method: "POST",
         headers: {
@@ -62,15 +85,32 @@ function authentication(type) {
             password: password,
         })
     })
-        .then(response => response.json())
-        .then(json => {
-            console.log(json);
-            sessionStorage.setItem("response", json);
+        .then(response => response.text())
+        .then(response => {
+            console.log(response);
+            return response
         })
+        .then(response => sessionStorage.setItem("response", response))
         .catch(error => console.error(error));
 }
 
 
+/**
+
+ * Adds text to HTML element by its ID.
+
+ *
+
+ * @param {string} id - Element's ID.
+ * @param {string} text - Text to add into element.
+
+ *
+
+ * @example
+
+ * add_text_element_on_page("hi", "hello_field") //adds "hi" into element with "hello_field" ID
+
+ */
 function add_text_element_on_page(text, id) {
     let element = document.createTextNode(text);
     let space_for_element = document.getElementById(id);
@@ -79,25 +119,45 @@ function add_text_element_on_page(text, id) {
 }
 
 
+/**
+
+ * Fully clears HTML element by ID.
+
+ *
+
+ * @param {string} field_id - Element's ID.
+
+ *
+
+ * @example
+
+ * clear_field("field_to_clear") //deletes all elements in element with "field_to_clear" ID
+
+ */
 function clear_field(field_id) {
     let field = document.getElementById(field_id);
     field.innerHTML = "";
 }
 
 
-function signup() {
+/**
+
+ * Signs in user to website.
+
+ */
+function signin() {
     clear_field("error_message");
 
-    authentication("signup");
-
+    authentication("signin");
+    console.log(sessionStorage.getItem("response"));
     let response = sessionStorage.getItem("response");
-
+    console.log(response);
     if (response === null) {
         return
     }
 
-    if (response["already present"] === 0) {
-        add_text_element_on_page("User with this username doesn't exist, log in firstly", "error_message");
+    if (response["present"] === 0) {
+        add_text_element_on_page("User with this username doesn't exist, sign up firstly", "error_message");
     } else if (response["password"] === 0) {
         add_text_element_on_page("Wrong password", "error_message");
     } else {
@@ -107,6 +167,18 @@ function signup() {
 }
 
 
+/**
+
+ * Adds video on /quiz page to enhance user's experience by truthful and splendid commentaries by Oleg Tinkoff
+
+ *
+
+ * @param {string} path - Path to video file.
+ * @param {string} id - Element's ID.
+
+ *
+
+ */
 function add_video_on_page(path, id) {
     let video = document.createElement("video");
     video.src = path;
@@ -123,12 +195,20 @@ function add_video_on_page(path, id) {
 }
 
 
-function login() {
+/**
+
+ * Signs up user to website
+
+ */
+function signup() {
+    console.log("signing up");
     clear_field("error_message");
 
-    authentication("login");
+    authentication("signup");
 
     let response = sessionStorage.getItem("response");
+
+    console.log(response);
 
     if (response === null) {
         return
@@ -142,6 +222,21 @@ function login() {
 }
 
 
+/**
+
+ * Gets HTML checkbox answer(s) by element's name.
+
+ *
+
+ * @param {string} name - Element's name.
+
+ *
+
+ * @example
+
+ * get_chosen_answer_by_name_for_checkbox("quiz") //returns list of answers for checkbox with "quiz" name (can possibly be empty)
+
+ */
 function get_chosen_answer_by_name_for_checkbox(name) {
     let element = document.getElementsByName(name);
     let chosen_answers = [];
@@ -156,6 +251,21 @@ function get_chosen_answer_by_name_for_checkbox(name) {
 }
 
 
+/**
+
+ * Gets HTML radio answer by element's name. Returns null if there is no answer.
+
+ *
+
+ * @param {string} name - Element's name.
+
+ *
+
+ * @example
+
+ * get_chosen_answer_by_name_for_radio("quiz") //returns answer for "quiz" element or null if there is no answer
+
+ */
 function get_chosen_answer_by_name_for_radio(name) {
     let element = document.getElementsByName(name);
 
@@ -169,31 +279,42 @@ function get_chosen_answer_by_name_for_radio(name) {
 }
 
 
+/**
+
+ * Gets and loads results table from server. Or loads not-signed-in page if user is not signed in (has no token)
+
+ */
 function get_results() {
     let token = sessionStorage.getItem('token');
 
     console.log(token);
 
-    if (token === undefined) {
+    if (token === null) {
         console.log('not defined');
-        redirection("/signup_error");
+        redirection("/signin_error");
     }
 
     fetch("http://0.0.0.0:8001/results", {
         method: "GET",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
-            "token": token
+            "token": token,
         },
     })
-        .then((response) => {
-            console.log(response);
-            document.write(response);
+        .then(response => response.text())
+        .then(html => {
+            console.log(html);
+            document.write(html);
         })
         .catch(error => console.error(error));
 }
 
 
+/**
+
+ * Submits answers for quiz, and sends them in server. Then adds result on a screen and adds video commentary to it.
+
+ */
 function submit_answers() {
     clear_field("score");
     clear_field("error_message");
@@ -221,28 +342,29 @@ function submit_answers() {
         return
     }
 
-    fetch("/quiz/check", {
+    fetch("http://0.0.0.0:8001/quiz/check", {
         method: "POST",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
-            "Token": token
+            "token": token,
         },
         body: JSON.stringify({
             values: answers,
         })
     })
         .then(response => response.text())
-        .then(json => {
-            console.log(json);
-            sessionStorage.setItem("json", json);
+        .then(json_response => {
+            console.log(json_response);
+            sessionStorage.setItem("json_response", json_response);
         })
         .catch(error => console.error(error));
 
-    let response = JSON.parse(sessionStorage.getItem("json"));
+    let response = sessionStorage.getItem("json_response");
+    console.log(response);
 
     console.log("response: " + response["signup"]);
 
-    if (response["signup"] === 1) {
+    if (response["signin"] === 1) {
         redirection("/signup_error");
         return
     }
