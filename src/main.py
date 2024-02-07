@@ -137,7 +137,7 @@ async def load_results(request: Request, token: Annotated[str | None, Header()] 
     print(token_result)
 
     if token_result is None:
-        return FileResponse('static/html/not_signed_in.html')
+        return FileResponse('static/html/not_signed_in.html', status_code=401)
 
     query_results = session.query(Users).all()
 

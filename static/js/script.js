@@ -55,6 +55,7 @@ function authentication(type) {
     let username = get_text_by_id("name");
     let password = get_text_by_id("password");
     let url;
+    let response;
 
     console.log(username, password);
 
@@ -86,13 +87,15 @@ function authentication(type) {
             password: password,
         })
     })
-        .then(response => response.text())
-        .then(response => {
-            console.log(response);
-            return response
+        .then(response => response.json())
+        .then(response_text => {
+            console.log(response_text);
+            response = response_text;
         })
-        .then(response => sessionStorage.setItem("response", response))
         .catch(error => console.error(error));
+
+    console.log("auth "+response);
+    return JSON.parse(response)
 }
 
 
@@ -149,22 +152,49 @@ function clear_field(field_id) {
 function signin() {
     clear_field("error_message");
 
-    authentication("signin");
-    console.log(sessionStorage.getItem("response"));
-    let response = sessionStorage.getItem("response");
-    console.log(response);
-    if (response === null) {
-        return
-    }
+    let username = get_text_by_id("name");
+    let password = get_text_by_id("password");
 
-    if (response["present"] === 0) {
-        add_text_element_on_page("User with this username doesn't exist, sign up firstly", "error_message");
-    } else if (response["password"] === 0) {
-        add_text_element_on_page("Wrong password", "error_message");
-    } else {
-        sessionStorage.setItem("token", response["token"]);
-        redirection();
+    console.log(username, password);
+
+    if (username === null) {
+        clear_field("error_message");
+        add_text_element_on_page("Username is required", "error_message");
+        return null
+    } else if (password === null) {
+        clear_field("error_message");
+        add_text_element_on_page("Password is required", "error_message");
+        return null
     }
+    
+    fetch("/signin/check", {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            name: username,
+            score: 0,
+            password: password,
+        })
+    })
+        .then(response => response.json())
+        .then(json => {
+            if (json === null) {
+                return
+            }
+
+            if (json["present"] === 0) {
+                add_text_element_on_page("User with this username doesn't exist, sign up firstly", "error_message");
+            } else if (json["password"] === 0) {
+                add_text_element_on_page("Wrong password", "error_message");
+            } else {
+                sessionStorage.setItem("token", json["token"]);
+                redirection();
+            }
+        })
+        .catch(error => console.error(error));
 }
 
 
@@ -202,24 +232,48 @@ function add_video_on_page(path, id) {
 
  */
 function signup() {
-    console.log("signing up");
     clear_field("error_message");
 
-    authentication("signup");
+    let username = get_text_by_id("name");
+    let password = get_text_by_id("password");
 
-    let response = sessionStorage.getItem("response");
+    console.log(username, password);
 
-    console.log(response);
-
-    if (response === null) {
-        return
+    if (username === null) {
+        clear_field("error_message");
+        add_text_element_on_page("Username is required", "error_message");
+        return null
+    } else if (password === null) {
+        clear_field("error_message");
+        add_text_element_on_page("Password is required", "error_message");
+        return null
     }
-    
-    if (response["created"] === 0) {
-        add_text_element_on_page("User with this username already exists", "error_message");
-    } else {
-        redirection();
-    }
+
+    fetch("/signup/check", {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            name: username,
+            score: 0,
+            password: password,
+        })
+    })
+        .then(response => response.json())
+        .then(json => {
+            if (json === null) {
+                return
+            }
+
+            if (json["created"] === 0) {
+                add_text_element_on_page("User with this username already exists", "error_message");
+            } else {
+                redirection();
+            }
+        })
+        .catch(error => console.error(error));
 }
 
 
@@ -300,10 +354,13 @@ function get_results() {
         headers: {
             "Content-type": "application/json; charset=UTF-8",
             "token": token,
-            "Access-Control-Allow-Origin": "*"
+            // "Access-Control-Allow-Origin": "*",
         },
     })
-        .then(response => response.text())
+        .then(response => {
+            console.log(response);
+            return response.text()
+        })
         .then(html => {
             console.log(html);
             document.write(html);
@@ -355,30 +412,24 @@ function submit_answers() {
             values: answers,
         })
     })
-        .then(response => response.text())
-        .then(json_response => {
-            console.log(json_response);
-            sessionStorage.setItem("json_response", json_response);
+        .then(response => response.json())
+        .then(json => {
+            console.log(json);
+
+            if (json["signin"] === 1) {
+                redirection("/signup_error");
+                return
+            }
+
+            add_text_element_on_page("Your score is " + json["score"], "score");
+
+            if (json["score"] < 5) {
+                add_video_on_page("/static/videos/premitivniye.mp4", "score");
+            } else if (json["score"] < 8) {
+                add_video_on_page("/static/videos/somnitelno.mp4", "score");
+            } else {
+                add_video_on_page("/static/videos/kruto.mp4", "score");
+            }
         })
         .catch(error => console.error(error));
-
-    let response = sessionStorage.getItem("json_response");
-    console.log(response);
-
-    console.log("response: " + response["signup"]);
-
-    if (response["signin"] === 1) {
-        redirection("/signup_error");
-        return
-    }
-
-    add_text_element_on_page("Your score is " + response["score"], "score");
-
-    if (response["score"] < 5) {
-        add_video_on_page("/static/videos/premitivniye.mp4", "score");
-    } else if (response["score"] < 8) {
-        add_video_on_page("/static/videos/somnitelno.mp4", "score");
-    } else {
-        add_video_on_page("/static/videos/kruto.mp4", "score");
-    }
 }
