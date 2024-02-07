@@ -7,7 +7,6 @@ from database_init import Users, Tokens, engine, QuizAnswers
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
 from uuid import uuid4
 
 
@@ -20,16 +19,6 @@ ANSWERS = []
 session = sessionmaker(bind=engine)()
 
 templates = Jinja2Templates(directory="static/templates")
-
-origins = ["*"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 @app.get('/')
@@ -91,7 +80,7 @@ async def signup_authentication(user: User):
     result = session.query(Users).filter(Users.name == user.name).all()
 
     if result:
-        return JSONResponse({'info': 'User already present, error.', 'created': 0})
+        return JSONResponse({'info': 'User already present error.', 'created': 0})
     print('hi', result, user)
     user_in_database_type: Users = Users(
         name=user.name,

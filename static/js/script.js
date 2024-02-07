@@ -69,15 +69,16 @@ function authentication(type) {
     }
     
     if (type === "signin") {
-        url = "http://0.0.0.0:8001/signin/check";
+        url = "/signin/check";
     } else {
-        url = "http://0.0.0.0:8001/signup/check";
+        url = "/signup/check";
     }
     console.log(url);
     fetch(url, {
         method: "POST",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify({
             name: username,
@@ -294,11 +295,12 @@ function get_results() {
         redirection("/signin_error");
     }
 
-    fetch("http://0.0.0.0:8001/results", {
+    fetch("/results", {
         method: "GET",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
             "token": token,
+            "Access-Control-Allow-Origin": "*"
         },
     })
         .then(response => response.text())
@@ -342,11 +344,12 @@ function submit_answers() {
         return
     }
 
-    fetch("http://0.0.0.0:8001/quiz/check", {
+    fetch("/quiz/check", {
         method: "POST",
         headers: {
             "Content-type": "application/json; charset=UTF-8",
             "token": token,
+            "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify({
             values: answers,
