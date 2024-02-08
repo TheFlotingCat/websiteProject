@@ -385,12 +385,14 @@ function submit_answers() {
     let fifth_answer = get_chosen_answer_by_name_for_radio("book");
     let sixth_answer = get_chosen_answer_by_name_for_radio("python");
     let seventh_answer = get_chosen_answer_by_name_for_checkbox("functional_prog");
-    let eight_answer = get_text_by_id("layout");
+    let eight_answer = get_text_by_id("layout").toLocaleLowerCase();
     let ninth_answer = get_chosen_answer_by_name_for_radio("best_girl");
     let tenth_answer =  get_text_by_id("selection-last");
 
     let answers = [first_answer, second_answer, third_answer, forth_answer, fifth_answer,
     sixth_answer, seventh_answer, eight_answer, ninth_answer, tenth_answer]
+
+    console.log(answers);
 
     let present_answers = answers.map((element) => (!(element === null) && element.length != 0));
 

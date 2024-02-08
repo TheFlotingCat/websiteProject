@@ -3,7 +3,6 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship, Mapped
 from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer, String
 
-
 engine = create_engine('sqlite:////home/kir/PycharmProjects/website/src/database.db', echo=True)
 
 Session = sessionmaker(bind=engine)

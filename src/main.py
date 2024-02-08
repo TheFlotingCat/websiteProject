@@ -1,14 +1,15 @@
 from typing import Annotated
-import uvicorn
-from sqlalchemy.orm import sessionmaker
-from api_classes import TestAnswers, User
+
 from fastapi import FastAPI, Header, Request
-from database_init import Users, Tokens, engine, QuizAnswers
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import sessionmaker
+import uvicorn
 from uuid import uuid4
 
+from api_classes import TestAnswers, User
+from database_init import Users, Tokens, engine, QuizAnswers
 
 app = FastAPI()
 
