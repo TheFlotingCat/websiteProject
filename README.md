@@ -1,4 +1,4 @@
-# Website build with FastAPI #
+# Website built with FastAPI #
 
 ### Tools used for backend ###
 - FastAPI - backend logic
